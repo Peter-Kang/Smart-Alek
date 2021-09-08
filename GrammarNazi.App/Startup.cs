@@ -40,9 +40,9 @@ namespace GrammarNazi.App
             services.AddControllers();
 
             // Hosted services
-            services.AddHostedService<TelegramBotHostedService>();
+            //services.AddHostedService<TelegramBotHostedService>();
             services.AddHostedService<DiscordBotHostedService>();
-            services.AddHostedService<TwitterBotMentionHostedService>();
+            //services.AddHostedService<TwitterBotMentionHostedService>();
 
             // Disable Twitter bot due to limitation/suspension
             //services.AddHostedService<TwitterBotHostedService>();
@@ -52,7 +52,7 @@ namespace GrammarNazi.App
         private void ConfigureDependencies(IServiceCollection services)
         {
             // Settings
-            services.Configure<TwitterBotSettings>(Configuration.GetSection("AppSettings:TwitterBotSettings"));
+            //services.Configure<TwitterBotSettings>(Configuration.GetSection("AppSettings:TwitterBotSettings"));
             services.Configure<GithubSettings>(Configuration.GetSection("AppSettings:GithubSettings"));
             services.Configure<DiscordSettings>(d => d.Token = Environment.GetEnvironmentVariable("DISCORD_API_KEY"));
             services.Configure<MeaningCloudSettings>(m =>
@@ -65,7 +65,7 @@ namespace GrammarNazi.App
             services.AddSqlServerDbContext(Environment.GetEnvironmentVariable("SQL_SERVER_CONNECTION_STRING"));
 
             // Repository
-            services.AddTransient(typeof(IRepository<>), typeof(EFRepository<>));
+            services.AddTransient(typeof(IRepository<>), typeof(InMemoryRepository<>));
 
             // Services
             services.AddSingleton<IFileService, FileService>();
@@ -85,18 +85,11 @@ namespace GrammarNazi.App
             services.AddTransient<IGrammarService, YandexSpellerApiService>();
             services.AddTransient<IGrammarService, DatamuseApiService>();
             services.AddTransient<ITwitterLogService, TwitterLogService>();
-            services.AddTransient<IGithubService, GithubService>();
-            services.AddTransient<ITelegramCommandHandlerService, TelegramCommandHandlerService>();
             services.AddTransient<ISentimentAnalysisService, MeaningCloudSentimentAnalysisService>();
             services.AddTransient<IDiscordChannelConfigService, DiscordChannelConfigService>();
             services.AddTransient<IDiscordCommandHandlerService, DiscordCommandHandlerService>();
-            services.AddTransient<IUpdateHandler, TelegramUpdateHandler>();
-
             // Discord Bot Commands
             services.AddDiscordBotCommands();
-
-            // Telegram Bot Commands
-            services.AddTelegramBotCommands();
 
             // HttpClient
             services.AddHttpClient();
@@ -105,16 +98,7 @@ namespace GrammarNazi.App
             // NTextCatLanguageService
             services.AddNTextCatLanguageService();
 
-            // Telegram client
-            services.AddSingleton<ITelegramBotClient>(_ =>
-            {
-                var apiKey = Environment.GetEnvironmentVariable("TELEGRAM_API_KEY");
-
-                if (string.IsNullOrEmpty(apiKey))
-                    throw new InvalidOperationException("Empty TELEGRAM_API_KEY");
-
-                return new TelegramBotClient(apiKey);
-            });
+          
 
             // Twitter client
             services.AddSingleton<ITwitterClient>(_ =>
@@ -133,18 +117,6 @@ namespace GrammarNazi.App
                 var databaseUrl = Environment.GetEnvironmentVariable("FIREBASE_DATABASE_URL");
 
                 return new FirebaseClient(databaseUrl);
-            });
-
-            // Github Client
-            services.AddSingleton<IGitHubClient>(s =>
-            {
-                var githubToken = Environment.GetEnvironmentVariable("GITHUB_ACCESS_TOKEN");
-                var githubSettings = s.GetService<IOptions<GithubSettings>>().Value;
-
-                return new GitHubClient(new ProductHeaderValue(githubSettings.Username))
-                {
-                    Credentials = new Credentials(githubToken)
-                };
             });
 
             // Discord Client

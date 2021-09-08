@@ -353,3 +353,4 @@ GrammarNazi.App/Properties/launchSettings.json
 GrammarNazi.App/GrammarNazi.db
 
 .vscode
+*.json

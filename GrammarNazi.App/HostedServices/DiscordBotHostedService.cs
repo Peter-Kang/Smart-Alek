@@ -26,14 +26,12 @@ namespace GrammarNazi.App.HostedServices
         private readonly BaseSocketClient _client;
         private readonly DiscordSettings _discordSettings;
         private readonly ILogger<DiscordBotHostedService> _logger;
-        private readonly IGithubService _githubService;
         private readonly IEnumerable<IGrammarService> _grammarServices;
         private readonly IDiscordChannelConfigService _discordChannelConfigService;
         private readonly IDiscordCommandHandlerService _discordCommandHandlerService;
 
         public DiscordBotHostedService(BaseSocketClient baseSocketClient,
             IOptions<DiscordSettings> options,
-            IGithubService githubService,
             IEnumerable<IGrammarService> grammarServices,
             IDiscordChannelConfigService discordChannelConfigService,
             IDiscordCommandHandlerService discordCommandHandlerService,
@@ -42,7 +40,6 @@ namespace GrammarNazi.App.HostedServices
             _client = baseSocketClient;
             _discordSettings = options.Value;
             _logger = logger;
-            _githubService = githubService;
             _grammarServices = grammarServices;
             _discordChannelConfigService = discordChannelConfigService;
             _discordCommandHandlerService = discordCommandHandlerService;
@@ -74,8 +71,6 @@ namespace GrammarNazi.App.HostedServices
                 {
                     _logger.LogError(ex, ex.Message);
 
-                    // fire and forget
-                    _ = _githubService.CreateBugIssue($"Application Exception: {ex.Message}", ex, GithubIssueLabels.Discord);
                 }
             };
 
@@ -167,7 +162,7 @@ namespace GrammarNazi.App.HostedServices
                 return channelConfig;
 
             var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine("Hi, I'm GrammarNazi.");
+            messageBuilder.AppendLine("Hi, I'm SmartAlek.");
             messageBuilder.AppendLine("I'm currently working and correcting all spelling errors in this channel.");
             messageBuilder.AppendLine($"Type `{DiscordBotCommands.Help}` to get useful commands.");
 

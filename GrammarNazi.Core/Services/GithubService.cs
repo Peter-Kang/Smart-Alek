@@ -25,72 +25,75 @@ namespace GrammarNazi.Core.Services
 
         public async Task CreateBugIssue(string title, Exception exception, GithubIssueLabels githubIssueSection)
         {
-            var issueTitle = GetTrimmedTitle(title);
+            //var issueTitle = GetTrimmedTitle(title);
 
-            var issue = await GetIssueByTittle(issueTitle);
+            //var issue = await GetIssueByTittle(issueTitle);
 
-            // Update count if issue exist
-            if (issue != null)
-            {
-                var issueUpdate = new IssueUpdate
-                {
-                    Title = issue.Title,
-                    Body = GetBodyWithCounterUpdated(issue.Body)
-                };
+            //// Update count if issue exist
+            //if (issue != null)
+            //{
+            //    var issueUpdate = new IssueUpdate
+            //    {
+            //        Title = issue.Title,
+            //        Body = GetBodyWithCounterUpdated(issue.Body)
+            //    };
 
-                await _githubClient.Issue.Update(_githubSettings.Username, _githubSettings.RepositoryName, issue.Number, issueUpdate);
-                return;
-            }
+            //    await _githubClient.Issue.Update(_githubSettings.Username, _githubSettings.RepositoryName, issue.Number, issueUpdate);
+            //    return;
+            //}
 
-            var bodyBuilder = new StringBuilder();
-            bodyBuilder.Append("This is an issue created automatically by GrammarNazi when an exception was captured.\n\n");
-            bodyBuilder.AppendLine($"Date (UTC): {DateTime.UtcNow}\n\n");
-            bodyBuilder.AppendLine("Exception:\n\n").AppendLine(exception.ToString());
-            bodyBuilder.AppendLine("\n\nException caught counter: 1.");
+            //var bodyBuilder = new StringBuilder();
+            //bodyBuilder.Append("This is an issue created automatically by GrammarNazi when an exception was captured.\n\n");
+            //bodyBuilder.AppendLine($"Date (UTC): {DateTime.UtcNow}\n\n");
+            //bodyBuilder.AppendLine("Exception:\n\n").AppendLine(exception.ToString());
+            //bodyBuilder.AppendLine("\n\nException caught counter: 1.");
 
-            var newIssue = new NewIssue(issueTitle)
-            {
-                Body = bodyBuilder.ToString()
-            };
-            newIssue.Labels.Add(GithubIssueLabels.ProductionBug.GetDescription());
-            newIssue.Labels.Add(githubIssueSection.GetDescription());
+            //var newIssue = new NewIssue(issueTitle)
+            //{
+            //    Body = bodyBuilder.ToString()
+            //};
+            //newIssue.Labels.Add(GithubIssueLabels.ProductionBug.GetDescription());
+            //newIssue.Labels.Add(githubIssueSection.GetDescription());
 
-            await _githubClient.Issue.Create(_githubSettings.Username, _githubSettings.RepositoryName, newIssue);
+            //await _githubClient.Issue.Create(_githubSettings.Username, _githubSettings.RepositoryName, newIssue);
         }
 
         private async Task<Issue> GetIssueByTittle(string title)
         {
-            var issues = await _githubClient.Issue.GetAllForRepository(_githubSettings.Username, _githubSettings.RepositoryName);
+            //var issues = await _githubClient.Issue.GetAllForRepository(_githubSettings.Username, _githubSettings.RepositoryName);
 
-            return issues.FirstOrDefault(v => v.Title == title);
+            //return issues.FirstOrDefault(v => v.Title == title);
+            return new Octokit.Issue() { };
         }
 
         private static string GetTrimmedTitle(string title)
         {
-            if (title.Length <= Defaults.GithubIssueMaxTitleLength)
-                return title;
+            //if (title.Length <= Defaults.GithubIssueMaxTitleLength)
+            //    return title;
 
-            const string dots = "...";
+            //const string dots = "...";
 
-            return title[0..(Defaults.GithubIssueMaxTitleLength - dots.Length)] + dots;
+            //return title[0..(Defaults.GithubIssueMaxTitleLength - dots.Length)] + dots;
+            return "";
         }
 
         private static string GetBodyWithCounterUpdated(string issueBody)
         {
-            var index = issueBody.IndexOf("Exception caught counter: ");
+            //var index = issueBody.IndexOf("Exception caught counter: ");
 
-            if (index == -1)
-            {
-                return issueBody + $"\n\nException caught counter: 1.";
-            }
+            //if (index == -1)
+            //{
+            //    return issueBody + $"\n\nException caught counter: 1.";
+            //}
 
-            var exceptionCaughtText = issueBody[index..];
+            //var exceptionCaughtText = issueBody[index..];
 
-            var number = exceptionCaughtText.Replace("Exception caught counter: ", "").Replace(".", "");
+            //var number = exceptionCaughtText.Replace("Exception caught counter: ", "").Replace(".", "");
 
-            var parsedNumber = int.Parse(number);
+            //var parsedNumber = int.Parse(number);
 
-            return issueBody[..index] + $"Exception caught counter: {++parsedNumber}.";
+            //return issueBody[..index] + $"Exception caught counter: {++parsedNumber}.";
+            return "";
         }
     }
 }
